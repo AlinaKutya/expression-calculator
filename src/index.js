@@ -4,6 +4,7 @@ function eval() {
 }
 
 function expressionCalculator(expr) {
+  console.log(expr);
   expr = expr.split(' ').join('');
   expr = '(' + expr + ')';
   let re = /\([^()]+\)/,
@@ -11,11 +12,19 @@ function expressionCalculator(expr) {
     reMinus = /[\-|\w]((\d*\.\d*)|\d*)\-[\-|\w]((\d*\.\d*)|\d*)/,
     reMultiple = /[\-|\w]((\d*\.\d+)|\d*)\*[\-|\w]((\d*\.\d*)|\d*)/,
     reDivide = /[\-|\w]((\d*\.\d+)|\d*)\/[\-|\w]((\d*\.\d*)|\d*)/,
-    arr = [];
+    arr = [],
+    leftBrackets = expr.match(/\(/g),
+    rightBrackets = expr.match(/\)/g);
+
+  if (leftBrackets.length != rightBrackets.length) {
+    throw Error('ExpressionError: Brackets must be paired');
+  }
 
   while (re.test(expr)) {
     let result = expr.match(re);
+
     result2 = result + '';
+    result2.replace('++', '+').replace('--', '+');
     result2 = result2.substr(1, result2.length - 2);
 
     while (reDivide.test(result2)) {
@@ -26,7 +35,9 @@ function expressionCalculator(expr) {
 
       let b = arr[0] / arr[1];
       // console.log('результат деления', b);
-
+      if (arr[1] == 0) {
+        throw Error('TypeError: Division by zero.');
+      }
       result2 = result2.replace(a, b);
       //  console.log('итого ', result2);
     }
